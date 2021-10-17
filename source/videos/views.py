@@ -7,11 +7,12 @@ def VideosView(request):
 
     searchvalue = ''
 
-    form = VideoSearchForm(request.POST or None)
-    if form.is_valid():
-        searchvalue = form.cleaned_data.get("search")
+    form = request.GET.get('search')
+    #VideoSearchForm(request.POST or None)
+    #if form.is_valid():
+        #searchvalue = form.cleaned_data.get("search")
 
-    searchresults = Video.objects.filter(name__icontains=searchvalue)
+    searchresults = Video.objects.filter(name__icontains=form)
 
     context = {'form': form,
                'searchresults': searchresults,

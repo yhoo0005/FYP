@@ -9,8 +9,5 @@ class Video(models.Model):
     videofile = models.FileField(
         upload_to='videos/', validators=[validate_video])
 
-    class Meta:
-        app_label = 'videos'
-
     def __str__(self):
         return self.name + ": " + str(self.videofile)

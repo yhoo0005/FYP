@@ -28,5 +28,5 @@ urlpatterns = [
     path('change/email/', ChangeEmailView.as_view(), name='change_email'),
     path('change/email/<code>/', ChangeEmailActivateView.as_view(), name='change_email_activation'),
 
-    #path('videos/',views.VideosView, name='search'),
+    #path('videos/',views.VideosView, name='searchbar'),
 ]

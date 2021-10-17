@@ -8,22 +8,13 @@
 
         {% trans 'Your username is' %} <b>{{ request.user.username }}</b>.
         
-
-
         <p>&nbsp;</p> 
         <h4>{% trans 'Search' %}</h4>
-        <form action="{% url 'videos:search' %}" method="post">
+        <form action="{% url 'videos:searchbar' %}" method="get">
             {% csrf_token %}
-            <form>
-                <div class="form-group">
-                <input type="text" class="form-control" id="search_bar" placeholder="Enter Your Search">
-                </div>
-                <button type="submit" name='next'>Search</button> 
-                <!---<a class="button" href="{% url 'videos:search' %}">Search</a>
-                <button><a href="{% url 'videos:search' %}">Search</a></button>
-                <button type="Search" class="btn btn-primary">Search</button>--->
-            </form>
-    
+            <input type = "text" name ='search'/>
+            <Button type = "submit"> Search </button>
+            {{searchresults}}
         </form>
 
     {% else %}
@@ -31,5 +22,5 @@
         {% trans 'You are a guest.' %}
 
     {% endif %}
-
+    
 {% endblock %}

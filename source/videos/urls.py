@@ -5,5 +5,5 @@ from videos import views
 app_name = 'videos'
 
 urlpatterns = [
-    path('search-video/', views.VideosView, name='search')
+    path('search-video/', views.VideosView, name='searchbar')
 ]
