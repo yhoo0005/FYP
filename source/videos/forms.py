@@ -1,5 +1,8 @@
 from django import forms
+from .models import Video
 
 
-class VideoSearchForm(forms.Form):
-    search = forms.CharField(max_length=100)
+class VideoForm(forms.ModelForm):
+    class Meta:
+        model= Video
+        fields= ["name", "videofile"]

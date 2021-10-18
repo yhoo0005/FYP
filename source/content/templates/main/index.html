@@ -9,13 +9,18 @@
         {% trans 'Your username is' %} <b>{{ request.user.username }}</b>.
         
         <p>&nbsp;</p> 
-        <h4>{% trans 'Search' %}</h4>
+        <h3>{% trans 'Search' %}</h3>
         <form action="{% url 'videos:searchbar' %}" method="get">
             {% csrf_token %}
             <input type = "text" name ='search'/>
-            <Button type = "submit"> Search </button>
-            {{searchresults}}
+            <Button type = "submit">Search</button>
         </form>
+        <p>&nbsp;</p> 
+        <form action="{% url 'videos:upload' %}" method="post">
+            {% csrf_token %}
+            <Button type = "submit">Upload Video</button>
+        </form>
+
 
     {% else %}
 
