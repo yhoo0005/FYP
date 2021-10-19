@@ -21,21 +21,26 @@ def VideosView(request):
     return render(request, 'videos/search_video.html', context)
 
 
-def showvideo(request):
-
-    #lastvideo= Video.objects.last()
-
-    #videofile= lastvideo.videofile
-
-
+def uploadvideo(request):
     form= VideoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         form.save()
 
+    context= {'form': form}
     
-    context= {#'videofile': videofile,
-              'form': form
-              }
-    
-      
     return render(request, 'videos/upload.html', context)
+
+
+def showvideo(request):
+
+    allVideo= Video.objects.all()
+
+    #videofile= allVideo.videofile
+
+    context = {'videofile': allVideo}
+
+    return render(request, 'videos/display.html', context)
+
+
+
+

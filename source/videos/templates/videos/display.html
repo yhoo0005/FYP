@@ -1,0 +1,21 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block content %}
+
+
+<h3>Display Video</h3>
+<br><br>
+{% for i in videofile %}
+<video width='400' controls>
+<source src="{{i.videofile.url}}" type="video/mp4">
+<!---<source src='{{ MEDIA_URL }}{{ videofile }}' type='video/mp4'>--->
+Your browser does not support the video tag.
+</video>
+{% endfor %}
+<br><br>
+</p>
+
+{% endblock %}
