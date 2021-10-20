@@ -10,5 +10,6 @@ app_name = 'videos'
 urlpatterns = [
     path('search-video/', views.VideosView, name='searchbar'),
     path('upload/', uploadvideo,name='upload'),
-    path('display', showvideo, name='display'),
+    path('display/', showvideo, name='display'),
+    #path('predict/', Predict, name='predict'),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

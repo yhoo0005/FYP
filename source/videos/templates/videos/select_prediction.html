@@ -1,0 +1,26 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block content %}
+    <form action="{% url 'videos:display' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <h5>Please select one video file from the server below</h5>
+        <h6>Click Play to preview the video file</h6>
+        {% for i in videofile %}
+          <input type="checkbox" name="file_name" value="{{ myfile }}">
+            <label>
+                <video width='400' controls>
+                <source src="{{i.videofile.url}}" type="video/mp4">
+            </label>
+             </label>    
+            <a href=>{{ i }}</a>
+            </label>
+            <br>
+        {% endfor %}
+        <br>
+        <button type="submit" class="btn btn-primary">Predict</button>
+    </form>
+{% endblock %}
