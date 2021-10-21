@@ -19,11 +19,8 @@ import subprocess
 import math
 from pydub import AudioSegment
 from time import strftime, gmtime
+import os, shutil
 
-#from config import CHECKPOINTS_DIR_PATH
-#from config import VIDEOS_FILE_PATH
-#from config import AUDIO_ONLY_PATH
-#from config import DATASET_DIR_PATH
 
 def VideosView(request):
     searchvalue = ''
@@ -62,7 +59,7 @@ def showvideo(request):
 
     return render(request, 'videos/select_prediction.html', context)
 
-AUDIO_ONLY_PATH = str(os.path.join(settings.MEDIA_ROOT, "audio/audioOnly"))
+AUDIO_ONLY_PATH = str(os.path.join(settings.MEDIA_ROOT, "audio/audioOnly/"))
 AUDIO_CHUNKS_PATH = str(os.path.join(settings.MEDIA_ROOT, "audio/audioOnly/audio_chunks/"))
 class SplitWavAudio():
     def __init__(self, folder, filename):
@@ -331,12 +328,52 @@ def load_checkpoint(optimizer, model, filename):
         optimizer.load_state_dict(checkpoint_dict['optimizer'])
     return epoch
 
+def delete(folder):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-class predict(request):
-    #filename = request.POST.getlist('file_name').pop()
-    #filepath = 
 
-    filepath = str(os.path.join(settings.MEDIA_ROOT, "videos/test.mp4"))
+emotions_dict ={
+    '0':'neutral',
+    '1':'calm',
+    '2':'happy',
+    '3':'sad',
+    '4':'angry',
+    '5':'fearful',
+    '6':'disgust',
+    '7':'surprised'
+    }
+
+# need device to instantiate model
+device = 'cpu'
+
+# instantiate model for 8 emotions and move to GPU 
+model = parallel_all_you_want(len(emotions_dict)).to(device)
+
+optimizer = torch.optim.SGD(model.parameters(),lr=0.01, weight_decay=1e-3, momentum=0.8)
+
+# pick load folder  
+load_folder = str(os.path.join(settings.MEDIA_ROOT, "checkpoint"))
+
+# make full load path
+load_path = str(os.path.join(settings.MEDIA_ROOT, "checkpoint/parallel_all_you_wantFINAL-016.pkl"))
+
+## instantiate empty model and populate with params from binary 
+model = parallel_all_you_want(len(emotions_dict))
+load_checkpoint(optimizer, model, load_path)
+
+
+def predict(request):
+    filename = request.POST.get('file_name')
+    filepath = str(os.path.join(settings.MEDIA_ROOT, str(filename)))
+    print(filepath)
+
+    #filepath = str(os.path.join(settings.MEDIA_ROOT, "videos/test.mp4"))
     video_path = filepath
     video = mp.VideoFileClip(video_path)
 
@@ -360,29 +397,6 @@ class predict(request):
     '6':'disgust',
     '7':'surprised'
 }
-    # need device to instantiate model
-    device = 'cpu'
-
-    # instantiate model for 8 emotions and move to GPU 
-    model = parallel_all_you_want(len(emotions_dict)).to(device)
-
-    optimizer = torch.optim.SGD(model.parameters(),lr=0.01, weight_decay=1e-3, momentum=0.8)
-
-   # pick load folder  
-    load_folder = str(os.path.join(settings.MEDIA_ROOT, "checkpoint"))
-
-    # pick the epoch to load
-    epoch = '016'
-    model_name = f'parallel_all_you_wantFINAL-{epoch}.pkl'
-
-    # make full load path
-    load_path = str(os.path.join(settings.MEDIA_ROOT, "checkpoint/parallel_all_you_wantFINAL-016.pkl"))
-
-    ## instantiate empty model and populate with params from binary 
-    model = parallel_all_you_want(len(emotions_dict))
-    load_checkpoint(optimizer, model, load_path)
-
-    print(f'Loaded model from {load_path}')
 
     def predict(X):
         emotions_dict ={
@@ -395,55 +409,13 @@ class predict(request):
             '6':'disgust',
             '7':'surprised'
             }
-        model = parallel_all_you_want(len(emotions_dict))
+        #model = parallel_all_you_want(len(emotions_dict))
 
         model.eval()
         with torch.no_grad():
             output_logits, output_softmax = model(X)
             predictions = torch.argmax(output_softmax,dim=1)
         return predictions
-
-    def get_emotion_counts(predictions):
-        emotions_dict ={
-            '0':'neutral',
-            '1':'calm',
-            '2':'happy',
-            '3':'sad',
-            '4':'angry',
-            '5':'fearful',
-            '6':'disgust',
-            '7':'surprised'
-            }
-
-        array = [0] * len(emotions_dict)
-        for label in predictions:
-            array[label] += 1
-        return array
-
-    def get_timestamp_counts(predictions):
-        emotions_dict ={
-            '0':'neutral',
-            '1':'calm',
-            '2':'happy',
-            '3':'sad',
-            '4':'angry',
-            '5':'fearful',
-            '6':'disgust',
-            '7':'surprised'
-            }
-
-        emotion =[[] for _ in range(len(emotions_dict))]
-        prev = None
-        for i in range(len(predictions)):
-            if predictions[i] != prev:
-                emotion[predictions[i]].append(i)
-                prev = predictions[i]
-
-        timestamp_counts = []
-        for i in range(len(emotion)):
-            timestamp_counts.append(len(emotion[i]))
-        return timestamp_counts, sum(timestamp_counts)
-
 
     features = np.array(features)
     print(features.shape)
@@ -463,14 +435,89 @@ class predict(request):
     # Transform back to NxCxHxW 4D tensor format
     X = np.reshape(X, (N,C,H,W))
 
+    delete(str(os.path.join(settings.MEDIA_ROOT, "audio/audioOnly/")))
+    delete(str(os.path.join(settings.MEDIA_ROOT, "audio/audioOnly/audio_chunks/")))
+
     # check shape of X again
-    print(f'X_train scaled:{X.shape}')
+    #print(f'X_train scaled:{X.shape}')
 
 
     X_tensor = torch.tensor(X, device=device).float()
     predictions = predict(X_tensor)
     predictions = predictions.numpy()
-    predictions
+    #print(predictions)
+
+    smooth_predictions = np.copy(predictions)
+    for i in range(1, len(smooth_predictions)-2):
+        if smooth_predictions[i-1] == smooth_predictions[i+1]:
+            if smooth_predictions[i] != smooth_predictions[i-1]:
+                smooth_predictions[i] = smooth_predictions[i-1]
+
+    #print(smooth_predictions)
+    result = ""
+    start_time = 0
+    end_time = 0
+
+    neutral = []
+    calm = []
+    happy = []
+    sad = []
+    angry = []
+    fearful = []
+    disgust = []
+    surprised = []
+    list = [[], [], [], [], [], [], [], []]
+
+    previous_mood = smooth_predictions[0]
+    cache = 0
+    for i in range(len(smooth_predictions)):
+        if smooth_predictions[i] == previous_mood:
+            end_time += 3
+        else:
+            previous_mood = smooth_predictions[i]
+            list[int(smooth_predictions[cache])].append(str(start_time) + "-" + str(end_time) + "s ")
+            cache = i
+            start_time = end_time
+            end_time += 3
+        if i == len(smooth_predictions) - 1:
+            list[int(smooth_predictions[cache])].append(str(start_time) + "-" + str(end_time) + "s ")
+
+    a = "neutral:  "
+    for i in list[0]:
+         a += str(i)
+
+    b = "calm:  "
+    for i in list[1]:
+         b += str(i)
+
+    c = "happy:  "
+    for i in list[2]:
+         c += str(i)
+
+    d = "sad:  "
+    for i in list[3]:
+         d += str(i)
+
+    e = "angry:  "
+    for i in list[4]:
+         e += str(i)
+
+    f = "fearful:  "
+    for i in list[5]:
+         f += str(i)
+
+    g = "disgust:  "
+    for i in list[6]:
+         g += str(i)
+
+    h = "surprised:  "
+    for i in list[7]:
+         h += str(i)
+
+    context = {'predictions': list, 'filename': str(filename), 'smooth':smooth_predictions, 'a':a, 'b':b,
+    'c':c, 'd':d, 'e':e, 'f':f, 'g':g, 'h':h}
+
+    return render(request, 'videos/prediction_result.html', context)
 
 
 

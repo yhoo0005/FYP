@@ -1,0 +1,48 @@
+{% extends 'layouts/default/page.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% load i18n %}
+
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h5>Prediction Result</h5>
+    <label>
+        <video width='400' controls>
+    <source src="{{ MEDIA_URL }}{{ filename }}" type="video/mp4">
+    </label>
+    <br>
+    <h6>Emotion Timestamps</h6>
+    </label>
+        {{ a }}
+    </label>
+    <br>
+    </label>
+        {{ b }}
+    </label>
+    <br>
+    </label>
+        {{ c }}
+    </label>
+    <br>
+    </label>
+        {{ d }}
+    </label>
+    <br>
+    </label>
+        {{ e }}
+    </label>
+    <br>
+    </label>
+        {{ f }}
+    </label>
+    <br>
+    </label>
+        {{ g }}
+    </label>
+    <br>
+    </label>
+        {{ h }}
+    </label>
+{% endblock %}

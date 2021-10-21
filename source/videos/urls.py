@@ -8,7 +8,6 @@ from .views import predict, uploadvideo, showvideo
 app_name = 'videos'
 
 urlpatterns = [
-    path('search-video/', views.VideosView, name='searchbar'),
     path('upload/', uploadvideo,name='upload'),
     path('display/', showvideo, name='display'),
     path('predict/', predict, name='predict'),

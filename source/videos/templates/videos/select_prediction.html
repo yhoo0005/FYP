@@ -4,20 +4,20 @@
 {% load i18n %}
 
 {% block content %}
+    {{ predictions }}
     <form action="{% url 'videos:predict' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <h5>Please select one video file from the server below</h5>
         <h6>Click Play to preview the video file</h6>
         {% for i in videofile %}
-          <input type="checkbox" name="file_name" value="{{ myfile }}">
+          <input type="checkbox" name="file_name" value="{{ i }}">
             <label>
                 <video width='400' controls>
                 <source src="{{i.videofile.url}}" type="video/mp4">
             </label>
              </label>
-             <a href="/media/{{ i }}">{{ i }}</a>   
-            <a href=>{{ i }}</a>
+             <a href="/media/{{ i.videofile.URL }}">{{ i }}</a>
             </label>
             <br>
         {% endfor %}

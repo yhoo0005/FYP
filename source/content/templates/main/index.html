@@ -7,25 +7,16 @@
     {% if request.user.is_authenticated %}
     
     {% trans 'Your username is' %} <b>{{ request.user.username }}</b>.
-        
-    <p>&nbsp;</p> 
-    <h3>{% trans 'Search' %}</h3>
-    <form action="{% url 'videos:searchbar' %}" method="get">
-        {% csrf_token %}
-        <input type = "text" name ='search'/>
-        <Button type = "submit">Search</button>
-    </form>
-    <p>&nbsp;</p> 
+    <br>
     <form action="{% url 'videos:upload' %}" method="post">
         {% csrf_token %}
         <Button type = "submit">Upload Video</button>
     </form>
-
     </form>
-    <p>&nbsp;</p> 
+    <br>
     <form action="{% url 'videos:display' %}" method="post">
         {% csrf_token %}
-        <Button type = "submit">Display Video</button>
+        <Button type = "submit">Show Video To Predict</button>
     </form>
 
 
