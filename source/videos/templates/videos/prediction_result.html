@@ -7,42 +7,76 @@
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <h5>Prediction Result</h5>
+    <h4>Prediction Result</h4>
     <label>
         <video width='400' controls>
     <source src="{{ MEDIA_URL }}{{ filename }}" type="video/mp4">
     </label>
     <br>
-    <h6>Emotion Timestamps</h6>
+    <b>Emotion Timestamps</b>
+    <br>
     </label>
-        {{ a }}
+        <b>{{ a }}</b>
     </label>
     <br>
     </label>
-        {{ b }}
+        {{ j }}
     </label>
     <br>
     </label>
-        {{ c }}
+        <b>{{ b }}</b>
     </label>
     <br>
     </label>
-        {{ d }}
+        {{ k }}
     </label>
     <br>
     </label>
-        {{ e }}
+        <b>{{ c }}</b>
     </label>
     <br>
     </label>
-        {{ f }}
+        {{ l }}
     </label>
     <br>
     </label>
-        {{ g }}
+        <b>{{ d }}</b>
     </label>
     <br>
     </label>
-        {{ h }}
+        {{ m }}
     </label>
+    <br>
+    </label>
+        <b>{{ e }}</b>
+    </label>
+    <br>
+    </label>
+        {{ n }}
+    </label>
+    <br>
+    </label>
+        <b>{{ f }}</b>
+    </label>
+    <br>
+    </label>
+        {{ o }}
+    </label>
+    <br>
+    </label>
+        <b>{{ g }}</b>
+    </label>
+    <br>
+    </label>
+        {{ p }}
+    </label>
+    <br>
+    </label>
+        <b>{{ h }}</b>
+    </label>
+    <br>
+    </label>
+        {{ q }}
+    </label>
+    <br>
 {% endblock %}

@@ -1,0 +1,7 @@
+librosa
+torch
+moviepy
+numpy==1.19.5
+python==3.8.10
+pydub
+

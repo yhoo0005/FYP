@@ -21,24 +21,6 @@ from pydub import AudioSegment
 from time import strftime, gmtime
 import os, shutil
 
-
-def VideosView(request):
-    searchvalue = ''
-
-    form = request.GET.get('search')
-    #VideoSearchForm(request.POST or None)
-    #if form.is_valid():
-        #searchvalue = form.cleaned_data.get("search")
-
-    searchresults = Video.objects.filter(name__icontains=form)
-
-    context = {'form': form,
-               'searchresults': searchresults,
-               }
-
-    return render(request, 'videos/search_video.html', context)
-
-
 def uploadvideo(request):
     form= VideoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
@@ -368,6 +350,10 @@ model = parallel_all_you_want(len(emotions_dict))
 load_checkpoint(optimizer, model, load_path)
 
 
+"""
+This is the main function where we will pass our videos in and return the final results back to videos/display.html.
+a variable name of a to q will be used to pass the required infomation back to display.html.
+"""
 def predict(request):
     filename = request.POST.get('file_name')
     filepath = str(os.path.join(settings.MEDIA_ROOT, str(filename)))
@@ -458,14 +444,6 @@ def predict(request):
     start_time = 0
     end_time = 0
 
-    neutral = []
-    calm = []
-    happy = []
-    sad = []
-    angry = []
-    fearful = []
-    disgust = []
-    surprised = []
     list = [[], [], [], [], [], [], [], []]
 
     previous_mood = smooth_predictions[0]
@@ -481,41 +459,50 @@ def predict(request):
             end_time += 3
         if i == len(smooth_predictions) - 1:
             list[int(smooth_predictions[cache])].append(str(start_time) + "-" + str(end_time) + "s ")
+    
+    j = ""
+    k = ""
+    l = ""
+    m = ""
+    n = ""
+    o = ""
+    p = "" 
+    q = ""
 
-    a = "neutral:  "
+    a = "Neutral"
     for i in list[0]:
-         a += str(i)
+        j += str(i)
 
-    b = "calm:  "
+    b = "Calm"
     for i in list[1]:
-         b += str(i)
+         k += str(i)
 
-    c = "happy:  "
+    c = "Happy"
     for i in list[2]:
-         c += str(i)
+         l += str(i)
 
-    d = "sad:  "
+    d = "Sad"
     for i in list[3]:
-         d += str(i)
+         m += str(i)
 
-    e = "angry:  "
+    e = "Angry"
     for i in list[4]:
-         e += str(i)
+         n += str(i)
 
-    f = "fearful:  "
+    f = "Fearful"
     for i in list[5]:
-         f += str(i)
+         o += str(i)
 
-    g = "disgust:  "
+    g = "Disgust"
     for i in list[6]:
-         g += str(i)
+         p += str(i)
 
-    h = "surprised:  "
+    h = "Surprised"
     for i in list[7]:
-         h += str(i)
+         q += str(i)
 
     context = {'predictions': list, 'filename': str(filename), 'smooth':smooth_predictions, 'a':a, 'b':b,
-    'c':c, 'd':d, 'e':e, 'f':f, 'g':g, 'h':h}
+    'c':c, 'd':d, 'e':e, 'f':f, 'g':g, 'h':h, 'j':j, 'k':k, 'l':l, 'm':m, 'n':n, 'o':o, 'p':p, 'q':q} 
 
     return render(request, 'videos/prediction_result.html', context)
 
