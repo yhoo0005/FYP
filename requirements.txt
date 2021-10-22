@@ -3,4 +3,5 @@ torch
 moviepy
 numpy==1.19.5
 pydub
+pipenv
 
