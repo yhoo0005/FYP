@@ -453,12 +453,14 @@ def predict(request):
             end_time += 3
         else:
             previous_mood = smooth_predictions[i]
-            list[int(smooth_predictions[cache])].append(str(start_time) + "-" + str(end_time) + "s ")
+            list[int(smooth_predictions[cache])].append(str(start_time//60) + ":" + str(start_time%60).zfill(2) +
+             "-" + str(end_time//60) + ":" + str(end_time%60).zfill(2) + '   ')
             cache = i
             start_time = end_time
             end_time += 3
         if i == len(smooth_predictions) - 1:
-            list[int(smooth_predictions[cache])].append(str(start_time) + "-" + str(end_time) + "s ")
+            list[int(smooth_predictions[cache])].append(str(start_time//60) + ":" + str(start_time%60).zfill(2) +
+             "-" + str(end_time//60) + ":" + str(end_time%60).zfill(2) + '   ')
     
     j = ""
     k = ""
